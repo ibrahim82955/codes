@@ -1,0 +1,123 @@
+
+# Snake game in Python
+
+import pygame
+import random
+
+pygame.init()
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 400
+SCREEN_TITLE = "Snake Game"
+
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption(SCREEN_TITLE)
+
+class Snake:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.dx = 0
+        self.dy = 0
+        self.body = []
+        self.length = 3
+
+    def draw(self):
+        for segment in self.body:
+            pygame.draw.rect(screen, GREEN, [segment[0], segment[1], 10, 10])
+
+    def move(self):
+        self.body.insert(0, [self.x, self.y])
+
+        if len(self.body) > self.length:
+            self.body.pop()
+
+        self.x += self.dx
+        self.y += self.dy
+
+    def change_direction(self, key):
+        if key == pygame.K_LEFT and self.dx != 10:
+            self.dx = -10
+            self.dy = 0
+        elif key == pygame.K_RIGHT and self.dx != -10:
+            self.dx = 10
+            self.dy = 0
+        elif key == pygame.K_UP and self.dy != 10:
+            self.dx = 0
+            self.dy = -10
+        elif key == pygame.K_DOWN and self.dy != -10:
+            self.dx = 0
+            self.dy = 10
+
+    def check_collision(self):
+        if self.x < 0 or self.x > SCREEN_WIDTH - 10 or self.y < 0 or self.y > SCREEN_HEIGHT - 10:
+            return True
+
+        for segment in self.body[1:]:
+            if self.x == segment[0] and self.y == segment[1]:
+                return True
+
+        return False
+
+    def check_food(self, food):
+        if self.x == food.x and self.y == food.y:
+            return True
+        else:
+            return False
+
+class Food:
+    def __init__(self):
+        self.x = random.randrange(0, SCREEN_WIDTH - 10, 10)
+        self.y = random.randrange(0, SCREEN_HEIGHT - 10, 10)
+
+    def draw(self):
+        pygame.draw.rect(screen, RED, [self.x, self.y, 10, 10])
+
+    def new_position(self):
+        self.x = random.randrange(0, SCREEN_WIDTH - 10, 10)
+        self.y = random.randrange(0, SCREEN_HEIGHT - 10, 10)
+
+snake = Snake(300, 200)
+food = Food()
+
+running = True
+
+clock = pygame.time.Clock()
+
+while running:
+    for event in pygame.event.get():
+Okay, here is the rest of the code:
+
+```python
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            snake.change_direction(event.key)
+
+    screen.fill(BLACK)
+
+    
+    snake.move()
+    snake.draw()
+
+    food.draw()
+
+    if snake.check_food(food):
+        snake.length += 1
+        food.new_position()
+
+    if snake.check_collision():
+        running = False
+
+    pygame.display.flip()
+
+    clock.tick(15)
+
+pygame.quit()
+```
